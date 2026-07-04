@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>개념 학습 쌓기나무 시뮬레이터</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #dff6ff; font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; user-select: none; touch-action: none; }
+        
+        #educational-banner {
+            position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+            background-color: #fff9db; border: 2px solid #fab005; border-radius: 12px;
+            padding: 12px 25px; font-size: 16px; font-weight: bold; color: #2b2b2b;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15); z-index: 20; text-align: center; white-space: nowrap;
+        }
+        
+        #btn-container { position: absolute; top: 20px; left: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 10; width: 170px; }
+        
+        /* 모드 전환 버튼 디자인 */
+        #mode-container { display: flex; gap: 5px; width: 100%; }
+        .mode-btn { flex: 1; padding: 10px 5px; font-size: 13px; font-weight: bold; border-radius: 8px; border: 2px solid transparent; cursor: pointer; transition: 0.2s; text-align: center; background-color: #e9ecef; color: #495057; }
+        #btn-mode-add.active { background-color: #ffd43b; color: #000; border-color: #f59f00; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        #btn-mode-remove.active { background-color: #fa5252; color: #fff; border-color: #c92a2a; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+
+        .action-btn { background-color: #83d65c; border: none; border-radius: 10px; padding: 12px 20px; font-size: 15px; font-weight: bold; color: #000; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: background-color 0.2s; width: 100%; text-align: center; }
+        .action-btn:hover { background-color: #72c54d; }
+        #btn-clear { background-color: #ff6b6b; color: white; }
+        #btn-clear:hover { background-color: #fa5252; }
+        #btn-joystick { background-color: #4dabf7; color: white; }
+        #btn-joystick:hover { background-color: #339af0; }
+        #btn-joystick.active { background-color: #228be6; border: 2px solid #1864ab; }
+        #btn-temp { background-color: #20c997; color: white; }
+        #btn-temp:hover { background-color: #12b886; }
+        
+        #settings-panel { background-color: white; padding: 10px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; font-size: 13px; font-weight: bold; display: flex; flex-direction: column; gap: 5px; box-sizing: border-box; }
+        #settings-panel input { cursor: pointer; width: 100%; }
+
+        #info-panel { position: absolute; top: 20px; right: 20px; background-color: white; border-radius: 15px; padding: 20px 30px; font-size: 24px; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 10; min-width: 220px; }
+        #info-panel p { margin: 10px 0; }
+        .unit { font-size: 18px; color: #666; margin-left: 5px; }
+        
+        #list-panel { position: absolute; top: 380px; left: 20px; background-color: white; border-radius: 15px; width: 320px; max-height: calc(100vh - 400px); overflow-y: auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 10; display: none; padding: 15px; box-sizing: border-box; }
+        .list-item { display: flex; align-items: center; background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 10px; padding: 10px; margin-bottom: 10px; gap: 15px; cursor: pointer; transition: background-color 0.2s; }
+        .list-item:hover { background-color: #edf2ff; border-color: #748ffc; }
+        .list-item img { width: 100px; height: auto; border: 1px solid #ccc; border-radius: 5px; pointer-events: none; background-color: #dff6ff; }
+        .list-item-info { font-size: 13px; font-weight: bold; pointer-events: none; flex-grow: 1; word-break: break-all; }
+        .list-item-info .save-name { color: #1864ab; font-size: 15px; margin-bottom: 6px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
+        .list-item-info p { margin: 3px 0; }
+        
+        #mobile-controller { position: absolute; bottom: 30px; left: 30px; display: none; gap: 30px; align-items: center; z-index: 100; pointer-events: none; }
+        #joystick-zone { width: 120px; height: 120px; background: rgba(255,255,255,0.6); border: 2px solid #adb5bd; border-radius: 50%; position: relative; pointer-events: auto; touch-action: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        #joystick-stick { width: 44px; height: 44px; background: #495057; border-radius: 50%; position: absolute; top: 38px; left: 38px; transition: transform 0.05s; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+        
+        #height-btn-zone { display: flex; flex-direction: column; gap: 12px; pointer-events: auto; }
+        .height-btn { width: 60px; height: 60px; background: rgba(255,255,255,0.8); border: 2px solid #adb5bd; border-radius: 12px; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .height-btn:active { background: #e9ecef; }
+
+        #instruction { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background-color: rgba(255,255,255,0.8); padding: 10px 20px; border-radius: 20px; font-weight: bold; pointer-events: none; z-index: 10; text-align: center; font-size: 14px; }
+        #controls-info { position: absolute; bottom: 10px; right: 10px; color: #495057; background-color: rgba(255,255,255,0.6); padding: 6px 12px; border-radius: 5px; font-size: 12px; z-index: 10; pointer-events: none; text-align: right; }
+        
+        #list-panel::-webkit-scrollbar { width: 8px; }
+        #list-panel::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        #list-panel::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <div id="educational-banner">
+        💡 1cm³은 가로, 세로, 높이가 1cm인 정육면체의 부피입니다.
+    </div>
+
+    <div id="btn-container">
+        <div id="mode-container">
+            <button id="btn-mode-add" class="mode-btn active">🛠️ 설치</button>
+            <button id="btn-mode-remove" class="mode-btn">🗑️ 삭제</button>
+        </div>
+        <button id="btn-list" class="action-btn">목록보기</button>
+        <button id="btn-save" class="action-btn">저장하기</button>
+        <button id="btn-temp" class="action-btn">임시저장</button>
+        <button id="btn-clear" class="action-btn">전체삭제</button>
+        <button id="btn-joystick" class="action-btn">조이스틱 켜기</button>
+        <div id="settings-panel">
+            <label for="opacity-slider">나무 투명도: <span id="opacity-val">100</span>%</label>
+            <input type="range" id="opacity-slider" min="20" max="100" step="10" value="100">
+        </div>
+    </div>
+    
+    <div id="list-panel"></div>
+    
+    <div id="info-panel">
+        <p>겉넓이 : <span id="val-sa">0</span><span class="unit">cm²</span></p>
+        <p>부피 : <span id="val-vol">0</span><span class="unit">cm³</span></p>
+    </div>
+    
+    <div id="mobile-controller">
+        <div id="joystick-zone"><div id="joystick-stick"></div></div>
+        <div id="height-btn-zone">
+            <button id="btn-up" class="height-btn"><span>▲</span>상승</button>
+            <button id="btn-down" class="height-btn"><span>▼</span>하강</button>
+        </div>
+    </div>
+    
+    <div id="instruction">현재 모드에 따라 마우스 클릭/터치 시 블록이 설치되거나 삭제됩니다 (우클릭은 항상 삭제)</div>
+    <div id="controls-info">키보드 제어 - WASD: 평면 이동 | Space: 상승 | Shift: 하강<br>마우스 제어 - 드래그: 화면 회전</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <script>
+        let scene, camera, renderer, controls, rollOverMesh;
+        const objects = [];
+        const blocksData = new Map();
+        let ghostObjects = []; 
+
+        let listPanel, valSA, valVol, opacitySlider, opacityVal, mobileController;
+        const moveSpeed = 0.1; 
+        let globalOpacity = 1.0;
+        let currentMode = 'add'; // 'add' 또는 'remove'
+
+        const keyStates = { forward: false, backward: false, left: false, right: false, up: false, down: false };
+        const joystickVector = { x: 0, y: 0 };
+        const virtualHeightStates = { up: false, down: false };
+
+        let isDragging = false;
+        let dragThreshold = 5; 
+        let dragStartPoint = { x: 0, y: 0 };
+
+        init();
+        animate();
+
+        function init() {
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0xdff6ff);
+
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
+            camera.position.set(10, 10, 10);
+            camera.lookAt(0, 0, 0);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.maxPolarAngle = Math.PI / 2 - 0.05;
+
+            const ambientLight = new THREE.AmbientLight(0x606060);
+            scene.add(ambientLight);
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(1, 0.75, 0.5).normalize();
+            scene.add(directionalLight);
+
+            const gridHelper = new THREE.GridHelper(20, 20, 0x888888, 0xcccccc);
+            scene.add(gridHelper);
+            const axesHelper = new THREE.AxesHelper(10);
+            scene.add(axesHelper);
+
+            const rolloverGeo = new THREE.BoxGeometry(1, 1, 1);
+            const rolloverMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, opacity: 0.5, transparent: true });
+            rollOverMesh = new THREE.Mesh(rolloverGeo, rolloverMaterial);
+            scene.add(rollOverMesh);
+
+            const geometry = new THREE.PlaneGeometry(20, 20);
+            geometry.rotateX(-Math.PI / 2);
+            const plane = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ visible: false }));
+            scene.add(plane);
+            objects.push(plane);
+
+            listPanel = document.getElementById('list-panel');
+            valSA = document.getElementById('val-sa');
+            valVol = document.getElementById('val-vol');
+            opacitySlider = document.getElementById('opacity-slider');
+            opacityVal = document.getElementById('opacity-val');
+            mobileController = document.getElementById('mobile-controller');
+
+            renderer.domElement.addEventListener('pointermove', onPointerMove);
+            renderer.domElement.addEventListener('pointerdown', onPointerDown);
+            renderer.domElement.addEventListener('pointerup', onPointerUp);
+            
+            window.addEventListener('keydown', onKeyDown);
+            window.addEventListener('keyup', onKeyUp);
+            window.addEventListener('resize', onWindowResize);
+            
+            document.getElementById('btn-list').addEventListener('click', toggleList);
+            document.getElementById('btn-save').addEventListener('click', saveState);
+            document.getElementById('btn-clear').addEventListener('click', clearAllBlocks);
+            document.getElementById('btn-temp').addEventListener('click', saveTempState);
+            
+            // 모드 전환 버튼 이벤트
+            document.getElementById('btn-mode-add').addEventListener('click', () => setMode('add'));
+            document.getElementById('btn-mode-remove').addEventListener('click', () => setMode('remove'));
+
+            const joyBtn = document.getElementById('btn-joystick');
+            joyBtn.addEventListener('click', function() {
+                this.classList.toggle('active');
+                if(this.classList.contains('active')) {
+                    mobileController.style.display = 'flex';
+                    this.innerText = "조이스틱 끄기";
+                } else {
+                    mobileController.style.display = 'none';
+                    this.innerText = "조이스틱 켜기";
+                    resetJoystick();
+                }
+            });
+
+            opacitySlider.addEventListener('input', function() {
+                globalOpacity = parseInt(this.value) / 100;
+                opacityVal.innerText = this.value;
+                for (let i = 1; i < objects.length; i++) {
+                    objects[i].material.transparent = true;
+                    objects[i].material.opacity = globalOpacity;
+                }
+            });
+
+            setupJoystickLogic();
+            setupHeightButtonsLogic();
+        }
+
+        // 모드 변경 함수
+        function setMode(mode) {
+            currentMode = mode;
+            const btnAdd = document.getElementById('btn-mode-add');
+            const btnRemove = document.getElementById('btn-mode-remove');
+            
+            if (mode === 'add') {
+                btnAdd.classList.add('active');
+                btnRemove.classList.remove('active');
+                rollOverMesh.material.color.setHex(0xff0000); // 롤오버 빨간색(설치)
+                rollOverMesh.visible = true;
+            } else {
+                btnRemove.classList.add('active');
+                btnAdd.classList.remove('active');
+                rollOverMesh.visible = false; // 삭제 모드일 때는 롤오버 숨김
+            }
+        }
+
+        function saveTempState() {
+            ghostObjects.forEach(obj => scene.remove(obj));
+            ghostObjects = [];
+            if(blocksData.size === 0) { alert("임시저장할 쌓기나무가 없습니다!"); return; }
+
+            blocksData.forEach((value, key) => {
+                const [x, y, z] = key.split(',').map(Number);
+                const geometry = new THREE.BoxGeometry(1, 1, 1);
+                const material = new THREE.MeshBasicMaterial({ color: 0x20c997, transparent: true, opacity: 0.45 });
+                const ghost = new THREE.Mesh(geometry, material);
+                ghost.position.set(x, y, z);
+                ghost.scale.set(0.98, 0.98, 0.98);
+                const edges = new THREE.EdgesGeometry(geometry);
+                const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x087f5b, transparent: true, opacity: 0.6 }));
+                ghost.add(line);
+                scene.add(ghost);
+                ghostObjects.push(ghost);
+            });
+
+            const btnTemp = document.getElementById('btn-temp');
+            const originalText = btnTemp.innerText;
+            btnTemp.innerText = "임시저장 완료!";
+            setTimeout(() => { btnTemp.innerText = originalText; }, 1000);
+        }
+
+        function setupJoystickLogic() {
+            const zone = document.getElementById('joystick-zone');
+            const stick = document.getElementById('joystick-stick');
+            let dragActive = false;
+            let center = { x: 60, y: 60 };
+            const maxRadius = 40;
+
+            function handleStart(e) { dragActive = true; e.stopPropagation(); }
+            function handleMove(e) {
+                if (!dragActive) return;
+                e.stopPropagation();
+                const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+                const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+                const rect = zone.getBoundingClientRect();
+                let dx = (clientX - rect.left) - center.x;
+                let dy = (clientY - rect.top) - center.y;
+                let distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance > maxRadius) { dx = (dx / distance) * maxRadius; dy = (dy / distance) * maxRadius; }
+                stick.style.transform = `translate(${dx}px, ${dy}px)`;
+                joystickVector.x = dx / maxRadius; joystickVector.y = dy / maxRadius;
+            }
+            function handleEnd(e) { if(!dragActive) return; dragActive = false; resetJoystick(); e.stopPropagation(); }
+            zone.addEventListener('pointerdown', handleStart);
+            window.addEventListener('pointermove', handleMove);
+            window.addEventListener('pointerup', handleEnd);
+        }
+
+        function resetJoystick() {
+            document.getElementById('joystick-stick').style.transform = 'translate(0px, 0px)';
+            joystickVector.x = 0; joystickVector.y = 0;
+        }
+
+        function setupHeightButtonsLogic() {
+            const btnUp = document.getElementById('btn-up');
+            const btnDown = document.getElementById('btn-down');
+            btnUp.addEventListener('pointerdown', (e) => { virtualHeightStates.up = true; e.stopPropagation(); });
+            btnUp.addEventListener('pointerup', () => virtualHeightStates.up = false);
+            btnUp.addEventListener('pointerleave', () => virtualHeightStates.up = false);
+            btnDown.addEventListener('pointerdown', (e) => { virtualHeightStates.down = true; e.stopPropagation(); });
+            btnDown.addEventListener('pointerup', () => virtualHeightStates.down = false);
+            btnDown.addEventListener('pointerleave', () => virtualHeightStates.down = false);
+        }
+
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        function onPointerMove(event) {
+            mouse.set((event.clientX / window.innerWidth) * 2 - 1, -(event.clientY / window.innerHeight) * 2 + 1);
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(objects, false);
+
+            if (intersects.length > 0 && currentMode === 'add') {
+                const intersect = intersects[0];
+                const pos = intersect.point.clone().add(intersect.face.normal.clone().multiplyScalar(0.5));
+                rollOverMesh.position.set(Math.floor(pos.x) + 0.5, Math.floor(pos.y) + 0.5, Math.floor(pos.z) + 0.5);
+            }
+            if (Math.abs(event.clientX - dragStartPoint.x) > dragThreshold || Math.abs(event.clientY - dragStartPoint.y) > dragThreshold) {
+                isDragging = true;
+            }
+        }
+
+        function onPointerDown(event) {
+            if(event.target.tagName === 'BUTTON' || event.target.closest('#list-panel') || event.target.closest('#settings-panel') || event.target.closest('#mobile-controller')) return;
+            dragStartPoint.x = event.clientX;
+            dragStartPoint.y = event.clientY;
+            isDragging = false; 
+        }
+
+        function onPointerUp(event) {
+            if(event.target.tagName === 'BUTTON' || event.target.closest('#list-panel') || event.target.closest('#settings-panel') || event.target.closest('#mobile-controller')) return;
+            if (isDragging) { isDragging = false; return; }
+
+            mouse.set((event.clientX / window.innerWidth) * 2 - 1, -(event.clientY / window.innerHeight) * 2 + 1);
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(objects, false);
+
+            if (intersects.length > 0) {
+                const intersect = intersects[0];
+                
+                // 마우스 우클릭은 항상 삭제
+                if (event.button === 2) { 
+                    removeBlock(intersect.object);
+                } 
+                // 좌클릭 또는 터치일 때는 현재 모드(add/remove)를 따름
+                else if (event.button === 0) { 
+                    if (currentMode === 'add') {
+                        addBlock(intersect);
+                    } else if (currentMode === 'remove') {
+                        removeBlock(intersect.object);
+                    }
+                }
+            }
+            isDragging = false;
+        }
+
+        function removeBlock(object) {
+            if (object !== objects[0]) { // 바닥 평면이 아닐 때만 삭제
+                scene.remove(object);
+                objects.splice(objects.indexOf(object), 1);
+                const posKey = `${object.position.x},${object.position.y},${object.position.z}`;
+                blocksData.delete(posKey);
+                updateMath();
+            }
+        }
+
+        function addBlock(intersect) {
+            const pos = intersect.point.clone().add(intersect.face.normal.clone().multiplyScalar(0.5));
+            const x = Math.floor(pos.x) + 0.5;
+            const y = Math.floor(pos.y) + 0.5;
+            const z = Math.floor(pos.z) + 0.5;
+            const posKey = `${x},${y},${z}`;
+            if(!blocksData.has(posKey)) {
+                createBlock(x, y, z);
+                blocksData.set(posKey, true);
+                updateMath();
+            }
+        }
+
+        function createBlock(x, y, z) {
+            const geometry = new THREE.BoxGeometry(1, 1, 1);
+            const material = new THREE.MeshLambertMaterial({ color: 0xffa550, transparent: true, opacity: globalOpacity });
+            const voxel = new THREE.Mesh(geometry, material);
+            voxel.position.set(x, y, z);
+            scene.add(voxel);
+            const edges = new THREE.EdgesGeometry(geometry);
+            const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0xc86a24 }));
+            voxel.add(line);
+            objects.push(voxel);
+        }
+
+        function updateMath() {
+            const blocks = Array.from(blocksData.keys()).map(k => {
+                const parts = k.split(',').map(Number);
+                return { x: parts[0], y: parts[1], z: parts[2] };
+            });
+            const volume = blocks.length;
+            let surfaceArea = volume * 6;
+            const directions = [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]];
+            blocks.forEach(block => {
+                directions.forEach(dir => {
+                    const neighborKey = `${block.x + dir[0]},${block.y + dir[1]},${block.z + dir[2]}`;
+                    if (blocksData.has(neighborKey)) { surfaceArea -= 1; }
+                });
+            });
+            valSA.innerText = surfaceArea;
+            valVol.innerText = volume;
+        }
+
+        function clearAllBlocks() {
+            for (let i = objects.length - 1; i > 0; i--) {
+                scene.remove(objects[i]);
+            }
+            objects.length = 1; 
+            blocksData.clear();
+            updateMath();
+        }
+
+        function toggleList() {
+            listPanel.style.display = (listPanel.style.display === 'none' || listPanel.style.display === '') ? 'block' : 'none';
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function saveState() {
+            if(blocksData.size === 0) { alert("저장할 쌓기나무가 없습니다!"); return; }
+            
+            // 이름 입력 프롬프트 띄우기
+            let saveName = prompt("저장할 이름을 입력하세요:", "나의 쌓기나무");
+            if (saveName === null) return; // 사용자가 취소를 누른 경우 저장 중단
+            if (saveName.trim() === "") saveName = "이름 없음";
+
+            renderer.render(scene, camera);
+            const dataURL = renderer.domElement.toDataURL('image/png');
+            const currentBlocksCoords = Array.from(blocksData.keys()).map(k => {
+                const parts = k.split(',').map(Number);
+                return { x: parts[0], y: parts[1], z: parts[2] };
+            });
+            
+            const listItem = document.createElement('div');
+            listItem.className = 'list-item';
+            listItem.dataset.blocks = JSON.stringify(currentBlocksCoords);
+            
+            const img = document.createElement('img');
+            img.src = dataURL;
+            
+            const infoDiv = document.createElement('div');
+            infoDiv.className = 'list-item-info';
+            // 입력받은 이름을 목록에 표시
+            infoDiv.innerHTML = `<div class="save-name">📁 ${saveName}</div><p>겉넓이 : ${valSA.innerText}cm²</p><p>부피 : ${valVol.innerText}cm³</p>`;
+            
+            listItem.appendChild(img);
+            listItem.appendChild(infoDiv);
+            
+            listItem.addEventListener('click', function() {
+                const savedBlocks = JSON.parse(this.dataset.blocks);
+                loadSavedState(savedBlocks);
+            });
+            
+            listPanel.prepend(listItem);
+            
+            const btnSave = document.getElementById('btn-save');
+            const originalText = btnSave.innerText;
+            btnSave.innerText = "저장됨!";
+            setTimeout(() => { btnSave.innerText = originalText; }, 1000);
+        }
+
+        function loadSavedState(savedBlocks) {
+            clearAllBlocks();
+            savedBlocks.forEach(b => {
+                createBlock(b.x, b.y, b.z);
+                const posKey = `${b.x},${b.y},${b.z}`;
+                blocksData.set(posKey, true);
+            });
+            updateMath();
+        }
+
+        function updateCameraMovement() {
+            const direction = new THREE.Vector3();
+            camera.getWorldDirection(direction); 
+            const moveVector = new THREE.Vector3();
+
+            if (keyStates.forward) moveVector.add(direction);
+            if (keyStates.backward) moveVector.sub(direction);
+            if (keyStates.left) moveVector.add(direction.clone().cross(new THREE.Vector3(0, 1, 0)).normalize().negate());
+            if (keyStates.right) moveVector.add(direction.clone().cross(new THREE.Vector3(0, 1, 0)).normalize());
+
+            moveVector.y = 0; 
+            moveVector.normalize();
+
+            if (joystickVector.x !== 0 || joystickVector.y !== 0) {
+                const joyForward = direction.clone();
+                joyForward.y = 0;
+                joyForward.normalize().multiplyScalar(-joystickVector.y);
+                const joyRight = direction.clone().cross(new THREE.Vector3(0, 1, 0)).normalize().multiplyScalar(joystickVector.x);
+                moveVector.add(joyForward).add(joyRight);
+            }
+
+            if(moveVector.lengthSq() > 0) {
+                moveVector.normalize().multiplyScalar(moveSpeed);
+                camera.position.add(moveVector);
+                controls.target.add(moveVector);
+            }
+
+            let vertMovement = 0;
+            if (keyStates.up || virtualHeightStates.up) vertMovement += moveSpeed;
+            if (keyStates.down || virtualHeightStates.down) vertMovement -= moveSpeed;
+            
+            if (vertMovement !== 0) {
+                camera.position.y += vertMovement;
+                controls.target.y += vertMovement;
+            }
+        }
+
+        function onKeyDown(event) {
+            switch (event.code) {
+                case 'KeyW': keyStates.forward = true; break;
+                case 'KeyS': keyStates.backward = true; break;
+                case 'KeyA': keyStates.left = true; break;
+                case 'KeyD': keyStates.right = true; break;
+                case 'Space': keyStates.up = true; event.preventDefault(); break;
+                case 'ShiftLeft':
+                case 'ShiftRight': keyStates.down = true; event.preventDefault(); break;
+            }
+        }
+
+        function onKeyUp(event) {
+            switch (event.code) {
+                case 'KeyW': keyStates.forward = false; break;
+                case 'KeyS': keyStates.backward = false; break;
+                case 'KeyA': keyStates.left = false; break;
+                case 'KeyD': keyStates.right = false; break;
+                case 'Space': keyStates.up = false; break;
+                case 'ShiftLeft':
+                case 'ShiftRight': keyStates.down = false; break;
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            updateCameraMovement(); 
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        
+        document.addEventListener('contextmenu', event => event.preventDefault());
+    </script>
+</body>
+</html>
