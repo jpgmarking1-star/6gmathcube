@@ -16,7 +16,6 @@
         
         #btn-container { position: absolute; top: 20px; left: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 10; width: 170px; }
         
-        /* 모드 전환 버튼 디자인 */
         #mode-container { display: flex; gap: 5px; width: 100%; }
         .mode-btn { flex: 1; padding: 10px 5px; font-size: 13px; font-weight: bold; border-radius: 8px; border: 2px solid transparent; cursor: pointer; transition: 0.2s; text-align: center; background-color: #e9ecef; color: #495057; }
         #btn-mode-add.active { background-color: #ffd43b; color: #000; border-color: #f59f00; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
@@ -26,18 +25,24 @@
         .action-btn:hover { background-color: #72c54d; }
         #btn-clear { background-color: #ff6b6b; color: white; }
         #btn-clear:hover { background-color: #fa5252; }
-        #btn-joystick { background-color: #4dabf7; color: white; }
-        #btn-joystick:hover { background-color: #339af0; }
-        #btn-joystick.active { background-color: #228be6; border: 2px solid #1864ab; }
+        #btn-mobile { background-color: #4dabf7; color: white; }
+        #btn-mobile:hover { background-color: #339af0; }
+        #btn-mobile.active { background-color: #228be6; border: 2px solid #1864ab; }
         #btn-temp { background-color: #20c997; color: white; }
         #btn-temp:hover { background-color: #12b886; }
         
         #settings-panel { background-color: white; padding: 10px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; font-size: 13px; font-weight: bold; display: flex; flex-direction: column; gap: 5px; box-sizing: border-box; }
         #settings-panel input { cursor: pointer; width: 100%; }
 
-        #info-panel { position: absolute; top: 20px; right: 20px; background-color: white; border-radius: 15px; padding: 20px 30px; font-size: 24px; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 10; min-width: 220px; }
+        /* 정보 패널 디자인 */
+        #info-panel { position: absolute; top: 20px; right: 20px; background-color: white; border-radius: 15px; padding: 20px 30px; font-size: 24px; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 10; min-width: 220px; box-sizing: border-box; }
         #info-panel p { margin: 10px 0; }
         .unit { font-size: 18px; color: #666; margin-left: 5px; }
+
+        /* 임시저장 전용 정보 패널 */
+        #info-panel-temp { position: absolute; top: 140px; right: 20px; background-color: #e6fcf5; border: 2px solid #20c997; border-radius: 15px; padding: 15px 25px; font-size: 18px; font-weight: bold; color: #087f5b; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 10; min-width: 220px; display: none; box-sizing: border-box; }
+        #info-panel-temp p { margin: 8px 0; }
+        #info-panel-temp .title { font-size: 14px; color: #12b886; border-bottom: 1px solid #63e6be; padding-bottom: 5px; margin-bottom: 10px; text-align: center; }
         
         #list-panel { position: absolute; top: 380px; left: 20px; background-color: white; border-radius: 15px; width: 320px; max-height: calc(100vh - 400px); overflow-y: auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 10; display: none; padding: 15px; box-sizing: border-box; }
         .list-item { display: flex; align-items: center; background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 10px; padding: 10px; margin-bottom: 10px; gap: 15px; cursor: pointer; transition: background-color 0.2s; }
@@ -47,16 +52,18 @@
         .list-item-info .save-name { color: #1864ab; font-size: 15px; margin-bottom: 6px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
         .list-item-info p { margin: 3px 0; }
         
-        #mobile-controller { position: absolute; bottom: 30px; left: 30px; display: none; gap: 30px; align-items: center; z-index: 100; pointer-events: none; }
-        #joystick-zone { width: 120px; height: 120px; background: rgba(255,255,255,0.6); border: 2px solid #adb5bd; border-radius: 50%; position: relative; pointer-events: auto; touch-action: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        #mobile-controllers { position: absolute; inset: 0; pointer-events: none; z-index: 100; display: none; }
+        #mobile-controller-left { position: absolute; bottom: 30px; left: 30px; pointer-events: auto; }
+        #joystick-zone { width: 120px; height: 120px; background: rgba(255,255,255,0.6); border: 2px solid #adb5bd; border-radius: 50%; position: relative; touch-action: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         #joystick-stick { width: 44px; height: 44px; background: #495057; border-radius: 50%; position: absolute; top: 38px; left: 38px; transition: transform 0.05s; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
         
-        #height-btn-zone { display: flex; flex-direction: column; gap: 12px; pointer-events: auto; }
-        .height-btn { width: 60px; height: 60px; background: rgba(255,255,255,0.8); border: 2px solid #adb5bd; border-radius: 12px; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .height-btn:active { background: #e9ecef; }
+        #mobile-controller-right { position: absolute; bottom: 30px; right: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; pointer-events: auto; }
+        .pad-btn { width: 60px; height: 60px; background: rgba(255,255,255,0.8); border: 2px solid #adb5bd; border-radius: 12px; font-size: 13px; font-weight: bold; cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); touch-action: none; color: #495057; }
+        .pad-btn span { font-size: 18px; margin-bottom: 2px; }
+        .pad-btn:active { background: #e9ecef; }
 
         #instruction { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background-color: rgba(255,255,255,0.8); padding: 10px 20px; border-radius: 20px; font-weight: bold; pointer-events: none; z-index: 10; text-align: center; font-size: 14px; }
-        #controls-info { position: absolute; bottom: 10px; right: 10px; color: #495057; background-color: rgba(255,255,255,0.6); padding: 6px 12px; border-radius: 5px; font-size: 12px; z-index: 10; pointer-events: none; text-align: right; }
+        #controls-info { position: absolute; bottom: 120px; right: 20px; color: #495057; background-color: rgba(255,255,255,0.6); padding: 6px 12px; border-radius: 5px; font-size: 12px; z-index: 10; pointer-events: none; text-align: right; }
         
         #list-panel::-webkit-scrollbar { width: 8px; }
         #list-panel::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
@@ -78,7 +85,7 @@
         <button id="btn-save" class="action-btn">저장하기</button>
         <button id="btn-temp" class="action-btn">임시저장</button>
         <button id="btn-clear" class="action-btn">전체삭제</button>
-        <button id="btn-joystick" class="action-btn">조이스틱 켜기</button>
+        <button id="btn-mobile" class="action-btn">패드 조작 켜기</button>
         <div id="settings-panel">
             <label for="opacity-slider">나무 투명도: <span id="opacity-val">100</span>%</label>
             <input type="range" id="opacity-slider" min="20" max="100" step="10" value="100">
@@ -91,17 +98,27 @@
         <p>겉넓이 : <span id="val-sa">0</span><span class="unit">cm²</span></p>
         <p>부피 : <span id="val-vol">0</span><span class="unit">cm³</span></p>
     </div>
+
+    <div id="info-panel-temp">
+        <div class="title">💾 임시저장된 수치</div>
+        <p>겉넓이 : <span id="val-sa-temp">0</span><span class="unit">cm²</span></p>
+        <p>부피 : <span id="val-vol-temp">0</span><span class="unit">cm³</span></p>
+    </div>
     
-    <div id="mobile-controller">
-        <div id="joystick-zone"><div id="joystick-stick"></div></div>
-        <div id="height-btn-zone">
-            <button id="btn-up" class="height-btn"><span>▲</span>상승</button>
-            <button id="btn-down" class="height-btn"><span>▼</span>하강</button>
+    <div id="mobile-controllers">
+        <div id="mobile-controller-left">
+            <div id="joystick-zone"><div id="joystick-stick"></div></div>
+        </div>
+        <div id="mobile-controller-right">
+            <button id="btn-zoom-in" class="pad-btn"><span>➕</span>확대</button>
+            <button id="btn-up" class="pad-btn"><span>▲</span>상승</button>
+            <button id="btn-zoom-out" class="pad-btn"><span>➖</span>축소</button>
+            <button id="btn-down" class="pad-btn"><span>▼</span>하강</button>
         </div>
     </div>
     
-    <div id="instruction">현재 모드에 따라 마우스 클릭/터치 시 블록이 설치되거나 삭제됩니다 (우클릭은 항상 삭제)</div>
-    <div id="controls-info">키보드 제어 - WASD: 평면 이동 | Space: 상승 | Shift: 하강<br>마우스 제어 - 드래그: 화면 회전</div>
+    <div id="instruction">현재 모드에 따라 화면 터치 시 블록이 설치되거나 삭제됩니다.</div>
+    <div id="controls-info">키보드 제어 - WASD: 평면 이동 | Space: 상승 | Shift: 하강<br>마우스 제어 - 스크롤: 확대/축소 | 우클릭 드래그: 화면 회전</div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -112,14 +129,15 @@
         const blocksData = new Map();
         let ghostObjects = []; 
 
-        let listPanel, valSA, valVol, opacitySlider, opacityVal, mobileController;
+        let listPanel, valSA, valVol, valSATemp, valVolTemp, infoPanelTemp, opacitySlider, opacityVal, mobileControllers;
         const moveSpeed = 0.1; 
+        const zoomSpeed = 0.4; 
         let globalOpacity = 1.0;
-        let currentMode = 'add'; // 'add' 또는 'remove'
+        let currentMode = 'add'; 
 
         const keyStates = { forward: false, backward: false, left: false, right: false, up: false, down: false };
         const joystickVector = { x: 0, y: 0 };
-        const virtualHeightStates = { up: false, down: false };
+        const virtualStates = { up: false, down: false, zoomIn: false, zoomOut: false };
 
         let isDragging = false;
         let dragThreshold = 5; 
@@ -170,9 +188,15 @@
             listPanel = document.getElementById('list-panel');
             valSA = document.getElementById('val-sa');
             valVol = document.getElementById('val-vol');
+            
+            // 임시저장용 UI 요소 연결
+            infoPanelTemp = document.getElementById('info-panel-temp');
+            valSATemp = document.getElementById('val-sa-temp');
+            valVolTemp = document.getElementById('val-vol-temp');
+
             opacitySlider = document.getElementById('opacity-slider');
             opacityVal = document.getElementById('opacity-val');
-            mobileController = document.getElementById('mobile-controller');
+            mobileControllers = document.getElementById('mobile-controllers');
 
             renderer.domElement.addEventListener('pointermove', onPointerMove);
             renderer.domElement.addEventListener('pointerdown', onPointerDown);
@@ -187,19 +211,18 @@
             document.getElementById('btn-clear').addEventListener('click', clearAllBlocks);
             document.getElementById('btn-temp').addEventListener('click', saveTempState);
             
-            // 모드 전환 버튼 이벤트
             document.getElementById('btn-mode-add').addEventListener('click', () => setMode('add'));
             document.getElementById('btn-mode-remove').addEventListener('click', () => setMode('remove'));
 
-            const joyBtn = document.getElementById('btn-joystick');
-            joyBtn.addEventListener('click', function() {
+            const mobileBtn = document.getElementById('btn-mobile');
+            mobileBtn.addEventListener('click', function() {
                 this.classList.toggle('active');
                 if(this.classList.contains('active')) {
-                    mobileController.style.display = 'flex';
-                    this.innerText = "조이스틱 끄기";
+                    mobileControllers.style.display = 'block';
+                    this.innerText = "패드 조작 끄기";
                 } else {
-                    mobileController.style.display = 'none';
-                    this.innerText = "조이스틱 켜기";
+                    mobileControllers.style.display = 'none';
+                    this.innerText = "패드 조작 켜기";
                     resetJoystick();
                 }
             });
@@ -214,10 +237,9 @@
             });
 
             setupJoystickLogic();
-            setupHeightButtonsLogic();
+            setupPadButtonsLogic();
         }
 
-        // 모드 변경 함수
         function setMode(mode) {
             currentMode = mode;
             const btnAdd = document.getElementById('btn-mode-add');
@@ -226,20 +248,25 @@
             if (mode === 'add') {
                 btnAdd.classList.add('active');
                 btnRemove.classList.remove('active');
-                rollOverMesh.material.color.setHex(0xff0000); // 롤오버 빨간색(설치)
+                rollOverMesh.material.color.setHex(0xff0000); 
                 rollOverMesh.visible = true;
             } else {
                 btnRemove.classList.add('active');
                 btnAdd.classList.remove('active');
-                rollOverMesh.visible = false; // 삭제 모드일 때는 롤오버 숨김
+                rollOverMesh.visible = false; 
             }
         }
 
         function saveTempState() {
             ghostObjects.forEach(obj => scene.remove(obj));
             ghostObjects = [];
-            if(blocksData.size === 0) { alert("임시저장할 쌓기나무가 없습니다!"); return; }
+            if(blocksData.size === 0) { 
+                alert("임시저장할 쌓기나무가 없습니다!"); 
+                infoPanelTemp.style.display = 'none'; // 블록이 없으면 임시저장 패널 숨김
+                return; 
+            }
 
+            // 고스트 블록 생성
             blocksData.forEach((value, key) => {
                 const [x, y, z] = key.split(',').map(Number);
                 const geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -253,6 +280,11 @@
                 scene.add(ghost);
                 ghostObjects.push(ghost);
             });
+
+            // 임시저장 수치 패널 업데이트 및 표시
+            valSATemp.innerText = valSA.innerText;
+            valVolTemp.innerText = valVol.innerText;
+            infoPanelTemp.style.display = 'block';
 
             const btnTemp = document.getElementById('btn-temp');
             const originalText = btnTemp.innerText;
@@ -292,15 +324,18 @@
             joystickVector.x = 0; joystickVector.y = 0;
         }
 
-        function setupHeightButtonsLogic() {
-            const btnUp = document.getElementById('btn-up');
-            const btnDown = document.getElementById('btn-down');
-            btnUp.addEventListener('pointerdown', (e) => { virtualHeightStates.up = true; e.stopPropagation(); });
-            btnUp.addEventListener('pointerup', () => virtualHeightStates.up = false);
-            btnUp.addEventListener('pointerleave', () => virtualHeightStates.up = false);
-            btnDown.addEventListener('pointerdown', (e) => { virtualHeightStates.down = true; e.stopPropagation(); });
-            btnDown.addEventListener('pointerup', () => virtualHeightStates.down = false);
-            btnDown.addEventListener('pointerleave', () => virtualHeightStates.down = false);
+        function setupPadButtonsLogic() {
+            const bindButton = (id, stateKey) => {
+                const btn = document.getElementById(id);
+                btn.addEventListener('pointerdown', (e) => { virtualStates[stateKey] = true; e.stopPropagation(); });
+                btn.addEventListener('pointerup', () => virtualStates[stateKey] = false);
+                btn.addEventListener('pointerleave', () => virtualStates[stateKey] = false);
+            };
+
+            bindButton('btn-up', 'up');
+            bindButton('btn-down', 'down');
+            bindButton('btn-zoom-in', 'zoomIn');
+            bindButton('btn-zoom-out', 'zoomOut');
         }
 
         const raycaster = new THREE.Raycaster();
@@ -322,14 +357,14 @@
         }
 
         function onPointerDown(event) {
-            if(event.target.tagName === 'BUTTON' || event.target.closest('#list-panel') || event.target.closest('#settings-panel') || event.target.closest('#mobile-controller')) return;
+            if(event.target.tagName === 'BUTTON' || event.target.closest('#list-panel') || event.target.closest('#settings-panel') || event.target.closest('#mobile-controllers')) return;
             dragStartPoint.x = event.clientX;
             dragStartPoint.y = event.clientY;
             isDragging = false; 
         }
 
         function onPointerUp(event) {
-            if(event.target.tagName === 'BUTTON' || event.target.closest('#list-panel') || event.target.closest('#settings-panel') || event.target.closest('#mobile-controller')) return;
+            if(event.target.tagName === 'BUTTON' || event.target.closest('#list-panel') || event.target.closest('#settings-panel') || event.target.closest('#mobile-controllers')) return;
             if (isDragging) { isDragging = false; return; }
 
             mouse.set((event.clientX / window.innerWidth) * 2 - 1, -(event.clientY / window.innerHeight) * 2 + 1);
@@ -339,11 +374,9 @@
             if (intersects.length > 0) {
                 const intersect = intersects[0];
                 
-                // 마우스 우클릭은 항상 삭제
                 if (event.button === 2) { 
                     removeBlock(intersect.object);
                 } 
-                // 좌클릭 또는 터치일 때는 현재 모드(add/remove)를 따름
                 else if (event.button === 0) { 
                     if (currentMode === 'add') {
                         addBlock(intersect);
@@ -356,7 +389,7 @@
         }
 
         function removeBlock(object) {
-            if (object !== objects[0]) { // 바닥 평면이 아닐 때만 삭제
+            if (object !== objects[0]) { 
                 scene.remove(object);
                 objects.splice(objects.indexOf(object), 1);
                 const posKey = `${object.position.x},${object.position.y},${object.position.z}`;
@@ -415,6 +448,9 @@
             objects.length = 1; 
             blocksData.clear();
             updateMath();
+            
+            // 전체 삭제 시 임시저장 내역도 지울지 묻는 것이 좋으나,
+            // 일단 화면의 블록만 지우고 임시저장된 잔상은 냅두어 재시도하기 편하게 구성했습니다.
         }
 
         function toggleList() {
@@ -430,9 +466,8 @@
         function saveState() {
             if(blocksData.size === 0) { alert("저장할 쌓기나무가 없습니다!"); return; }
             
-            // 이름 입력 프롬프트 띄우기
             let saveName = prompt("저장할 이름을 입력하세요:", "나의 쌓기나무");
-            if (saveName === null) return; // 사용자가 취소를 누른 경우 저장 중단
+            if (saveName === null) return; 
             if (saveName.trim() === "") saveName = "이름 없음";
 
             renderer.render(scene, camera);
@@ -451,7 +486,6 @@
             
             const infoDiv = document.createElement('div');
             infoDiv.className = 'list-item-info';
-            // 입력받은 이름을 목록에 표시
             infoDiv.innerHTML = `<div class="save-name">📁 ${saveName}</div><p>겉넓이 : ${valSA.innerText}cm²</p><p>부피 : ${valVol.innerText}cm³</p>`;
             
             listItem.appendChild(img);
@@ -508,12 +542,25 @@
             }
 
             let vertMovement = 0;
-            if (keyStates.up || virtualHeightStates.up) vertMovement += moveSpeed;
-            if (keyStates.down || virtualHeightStates.down) vertMovement -= moveSpeed;
+            if (keyStates.up || virtualStates.up) vertMovement += moveSpeed;
+            if (keyStates.down || virtualStates.down) vertMovement -= moveSpeed;
             
             if (vertMovement !== 0) {
                 camera.position.y += vertMovement;
                 controls.target.y += vertMovement;
+            }
+
+            if (virtualStates.zoomIn || virtualStates.zoomOut) {
+                const camToTarget = new THREE.Vector3().subVectors(controls.target, camera.position);
+                const distance = camToTarget.length();
+                camToTarget.normalize();
+                
+                if (virtualStates.zoomIn && distance > 3) {
+                    camera.position.add(camToTarget.clone().multiplyScalar(zoomSpeed));
+                }
+                if (virtualStates.zoomOut && distance < 80) {
+                    camera.position.sub(camToTarget.clone().multiplyScalar(zoomSpeed));
+                }
             }
         }
 
